@@ -19,6 +19,8 @@
                             <div onclick="document.querySelector('#image').click()" class="channel-avatar-overlay">
 
                             </div>
+
+                            <img src="{{ $channel->image() }}" alt="">
                         </div>
                     </div>
 
