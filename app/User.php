@@ -21,6 +21,10 @@ class User extends Authenticatable
         });
     }
 
+    public function channel(){
+        return $this->hasOne(Channel::class);
+    }
+
     /**
      * The attributes that are mass assignable.
      *
