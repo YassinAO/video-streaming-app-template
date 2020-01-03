@@ -85,8 +85,17 @@
     </div>
 
     <script>
+        /** 
+        * We make sure that the user is authenticated in the main blade,
+        * So we don't have to pass props to every component of the application.
+        */
         window.AuthUser = '{!! auth()->user() !!}'
 
+        /** 
+        * The auth function needs to be unique because it's on the global object.
+        * Some packages might have the auth function defined on the window object.
+        * So we make use of the double underscore on this function.
+        */
         window.__auth = () => {
             try {
                 return JSON.parse(AuthUser)

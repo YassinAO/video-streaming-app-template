@@ -14,10 +14,15 @@ class User extends Authenticatable
     public $incrementing = false;
 
     protected static function boot(){
+        // Calling the parent boot to boot everything.
         parent::boot();
 
         static::creating(function($model){
-            $model->{$model->getKeyName()} = (string)  Str::uuid();
+            /**
+            * The primary key of $model is being overwritten by the uuid.
+            * Returns an object so it needs to be casted to a string.
+            */
+            $model->{$model->getKeyName()} = (string) Str::uuid();
         });
     }
 

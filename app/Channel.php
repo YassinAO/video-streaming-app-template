@@ -22,11 +22,13 @@ class Channel extends Model implements HasMedia
         return null;
     }
 
+    // We have to make sure if the current user is allowed to make changes to the currently visited channel.
     public function editable(){
         if (! auth()->check()) return false;
         return $this->user_id === auth()->user()->id;
     }
     
+    // To save storage we convert the file to a smaller size.
     public function registerMediaConversions(?Media $media = null)
     {
         $this->addMediaConversion('thumb')
