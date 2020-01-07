@@ -39,4 +39,8 @@ class Channel extends Model implements HasMedia
     public function subscriptions(){
         return $this->hasMany(Subscription::class);
     }
+
+    public function videos(){
+        return $this->hasMany(Video::class);
+    }
 }

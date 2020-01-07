@@ -50298,6 +50298,8 @@ window.Vue = __webpack_require__(/*! vue */ "./node_modules/vue/dist/vue.common.
 
 __webpack_require__(/*! ./components/subscribe-button */ "./resources/js/components/subscribe-button.js");
 
+__webpack_require__(/*! ./components/channel-uploads */ "./resources/js/components/channel-uploads.js");
+
 var app = new Vue({
   el: '#app'
 });
@@ -50346,6 +50348,74 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 //     cluster: process.env.MIX_PUSHER_APP_CLUSTER,
 //     encrypted: true
 // });
+
+/***/ }),
+
+/***/ "./resources/js/components/channel-uploads.js":
+/*!****************************************************!*\
+  !*** ./resources/js/components/channel-uploads.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+/**
+ * This vue component is for the subscription video upload button, 
+ * that an authenticated user can make use of by visiting their own channel profile.
+ * Within this component we make sure that the uploaded video files are stored in
+ * the database with the right path and name.
+ */
+Vue.component('channel-uploads', {
+  // We pass data to the child component from the parent by using props.
+  props: {
+    channel: {
+      type: Object,
+      required: true,
+      "default": function _default() {
+        return {};
+      }
+    }
+  },
+  data: function data() {
+    return {
+      selected: false,
+      videos: [],
+      progress: {}
+    };
+  },
+
+  /**
+   * We want to send each video to the server with axios.post, and then get the promise returned from axios.
+   * By using the uploaders array we can tell when all the videos are done uploading to the server, so that the
+   * video conversion can start.
+   */
+  methods: {
+    upload: function upload() {
+      var _this = this;
+
+      this.selected = true;
+      this.videos = Array.from(this.$refs.videos.files);
+      /**
+       * We map over each video then we create a new form and append the video and title then make a
+       * post request with axios to the server to save the form.
+       */
+
+      var uploaders = this.videos.map(function (video) {
+        var form = new FormData();
+        _this.progress[video.name] = 0;
+        form.append('video', video);
+        form.append('title', video.name);
+        return axios.post("/channels/".concat(_this.channel.id, "/videos"), form, {
+          // 
+          onUploadProgress: function onUploadProgress(event) {
+            _this.progress[video.name] = Math.ceil(event.loaded / event.total * 100);
+
+            _this.$forceUpdate();
+          }
+        });
+      });
+    }
+  }
+});
 
 /***/ }),
 
@@ -50478,8 +50548,8 @@ Vue.component('subscribe-button', {
 /*! no static exports found */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(/*! C:\xampp\htdocs\teentwerkers\resources\js\app.js */"./resources/js/app.js");
-module.exports = __webpack_require__(/*! C:\xampp\htdocs\teentwerkers\resources\sass\app.scss */"./resources/sass/app.scss");
+__webpack_require__(/*! C:\xampp\htdocs\video-streaming-app-template\resources\js\app.js */"./resources/js/app.js");
+module.exports = __webpack_require__(/*! C:\xampp\htdocs\video-streaming-app-template\resources\sass\app.scss */"./resources/sass/app.scss");
 
 
 /***/ })
