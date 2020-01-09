@@ -50358,6 +50358,14 @@ window.axios.defaults.headers.common['X-Requested-With'] = 'XMLHttpRequest';
 /*! no static exports found */
 /***/ (function(module, exports) {
 
+function _toConsumableArray(arr) { return _arrayWithoutHoles(arr) || _iterableToArray(arr) || _nonIterableSpread(); }
+
+function _nonIterableSpread() { throw new TypeError("Invalid attempt to spread non-iterable instance"); }
+
+function _iterableToArray(iter) { if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter); }
+
+function _arrayWithoutHoles(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } }
+
 /**
  * This vue component is for the subscription video upload button, 
  * that an authenticated user can make use of by visiting their own channel profile.
@@ -50379,7 +50387,9 @@ Vue.component('channel-uploads', {
     return {
       selected: false,
       videos: [],
-      progress: {}
+      progress: {},
+      uploads: [],
+      intervals: {}
     };
   },
 
@@ -50405,12 +50415,49 @@ Vue.component('channel-uploads', {
         form.append('video', video);
         form.append('title', video.name);
         return axios.post("/channels/".concat(_this.channel.id, "/videos"), form, {
-          // 
+          /**
+           * We make use of the progressevent to calculate/know what the current progress is of the uploaded file,
+           * so the user can be informed with a visual progressbar.
+           */
           onUploadProgress: function onUploadProgress(event) {
-            _this.progress[video.name] = Math.ceil(event.loaded / event.total * 100);
+            _this.progress[video.name] = Math.ceil(event.loaded / event.total * 100); // It can occur that the progress object doesn't update so we force it to do so.
 
             _this.$forceUpdate();
           }
+        }).then(function (_ref) {
+          var data = _ref.data;
+          _this.uploads = [].concat(_toConsumableArray(_this.uploads), [data]);
+        });
+      }); // We want to execute this when all of the videos are done uploading to the server.
+
+      axios.all(uploaders).then(function () {
+        _this.videos = _this.uploads;
+
+        _this.videos.forEach(function (video) {
+          _this.intervals[video.id] = setInterval(function () {
+            // We want to fetch the details/data of the video to perform some checks.
+            axios.get("/videos/".concat(video.id)).then(function (_ref2) {
+              var data = _ref2.data;
+
+              // We want to clear the interval when the it reaches 100 perecent, so we dont make another API call.
+              if (data.percentage === 100) {
+                clearInterval(_this.intervals[video.id]);
+              }
+              /**
+               * We want to map through all of the videos to find the specific one that we just got
+               * from the server and replace it with the fresh copy. The rest will remain the same.
+               */
+
+
+              _this.videos = _this.videos.map(function (v) {
+                if (v.id === data.id) {
+                  return data;
+                }
+
+                return v;
+              });
+            });
+          }, 3000);
         });
       });
     }

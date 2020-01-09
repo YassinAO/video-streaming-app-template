@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\UploadVideoController;
+use App\Http\Controllers\VideoController;
 
 /*
 |--------------------------------------------------------------------------
@@ -22,6 +23,8 @@ Auth::routes();
 Route::get('/home', 'HomeController@index')->name('home');
 
 Route::resource('channels', 'ChannelController');
+
+Route::get('videos/{video}', [VideoController::class, 'show']);
 
 
 // We make sure that all these routes need authentication first before they can be visited.

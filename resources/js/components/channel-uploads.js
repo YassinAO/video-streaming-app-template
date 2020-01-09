@@ -19,7 +19,9 @@ Vue.component('channel-uploads', {
     data: () => ({
         selected: false,
         videos: [],
-        progress: {}
+        progress: {},
+        uploads: [],
+        intervals: {}
     }),
 
     /**
@@ -56,8 +58,40 @@ Vue.component('channel-uploads', {
                         // It can occur that the progress object doesn't update so we force it to do so.
                         this.$forceUpdate()
                     }
+                }).then(({ data }) => {
+                    this.uploads = [...this.uploads, data]
                 })
             })
+
+            // We want to execute this when all of the videos are done uploading to the server.
+            axios.all(uploaders)
+                .then(() => {
+                    this.videos = this.uploads
+                    this.videos.forEach(video => {
+                        this.intervals[video.id] = setInterval(() => {
+
+                            // We want to fetch the details/data of the video to perform some checks.
+                            axios.get(`/videos/${video.id}`).then(({ data }) => {
+
+                                // We want to clear the interval when the it reaches 100 perecent, so we dont make another API call.
+                                if (data.percentage === 100) {
+                                    clearInterval(this.intervals[video.id])
+                                }
+                                
+                                 /**
+                                  * We want to map through all of the videos to find the specific one that we just got
+                                  * from the server and replace it with the fresh copy. The rest will remain the same.
+                                  */
+                                this.videos = this.videos.map(v => {
+                                    if (v.id === data.id) {
+                                        return data
+                                    }
+                                    return v
+                                })
+                            })
+                        }, 3000)
+                    })
+                })
         }
-    }
+    }   
 })
