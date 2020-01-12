@@ -18,14 +18,13 @@
 </div>
 @endsection
 
-@section('styles')
+@section('video-styles')
     <link href="https://unpkg.com/video.js@7/dist/video-js.min.css" rel="stylesheet">
     <link href="https://unpkg.com/@videojs/themes@1/dist/fantasy/index.css" rel="stylesheet">
 @endsection
     
-@section('scripts')
+@section('video-scripts')
     <script src="https://vjs.zencdn.net/7.6.6/video.js"></script>
-    <script>
-        videojs('video')    
-    </script>
+    <script>window.CURRENT_VIDEO = '{{ $video->id }}'</script>
+    <script src="{{ asset('js/player.js') }}"></script>
 @endsection
