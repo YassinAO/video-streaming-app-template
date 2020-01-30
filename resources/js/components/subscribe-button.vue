@@ -1,12 +1,18 @@
-import numeral from 'numeral'
+ <template>
+    <button @click="toggleSubscription" class="btn btn-danger">
+        {{ owner ? '' : subscribed ? 'Unsubscribe' : 'Subscribe' }} {{ count }} {{ owner ? 'Subscribers' : '' }}
+    </button>
+ </template>
 
-/**
+ <script>
+ import numeral from 'numeral'
+
+ /**
  * This vue component is for the subscription button that appears on a users channel.
  * Within this component we check which user is able to subscribe or unsubscribe to a channel.
  */
 
-Vue.component('subscribe-button', {
-
+export default  {
     // We pass data to the child component from the parent by using props.
     props: {
         channel: {
@@ -91,4 +97,5 @@ Vue.component('subscribe-button', {
             }
         }
     }
-})
+}
+</script>    

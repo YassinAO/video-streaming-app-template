@@ -22,10 +22,12 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+// If the application needs authentication for the videos and/or channels, then make sure to add it to the middleware below.
+
 Route::resource('channels', 'ChannelController');
 
 Route::get('videos/{video}', [VideoController::class, 'show']);
-
+Route::put('videos/{video}', [VideoController::class, 'updateViews']);
 
 // We make sure that all these routes need authentication first before they can be visited.
 

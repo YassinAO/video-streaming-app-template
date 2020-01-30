@@ -17,7 +17,7 @@
 
     <!-- Styles -->
     <link href="{{ asset('css/app.css') }}" rel="stylesheet">
-    @yield('styles')
+    @yield('video-styles')
 </head>
 <body>
     <div id="app">
@@ -105,6 +105,6 @@
         }
     </script>
     <script src="{{ asset('js/app.js') }}"></script>
-    @yield('scripts')
+    @yield('video-scripts')
 </body>
 </html>
